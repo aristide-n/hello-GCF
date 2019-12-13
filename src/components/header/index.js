@@ -61,11 +61,12 @@ export default class Header extends Component {
 							<TopAppBar.Icon menu onClick={this.openDrawer}>
 								menu
 							</TopAppBar.Icon>
-							<TopAppBar.Title>Preact app</TopAppBar.Title>
+							<TopAppBar.Title>when available</TopAppBar.Title>
 						</TopAppBar.Section>
-						<TopAppBar.Section align-end shrink-to-fit onClick={this.openSettings}>
-							<TopAppBar.Icon>settings</TopAppBar.Icon>
-						</TopAppBar.Section>
+						{/* TODO: an - restore settings? */}
+						{/*<TopAppBar.Section align-end shrink-to-fit onClick={this.openSettings}>*/}
+						{/*	<TopAppBar.Icon>settings</TopAppBar.Icon>*/}
+						{/*</TopAppBar.Section>*/}
 					</TopAppBar.Row>
 				</TopAppBar>
 				<Drawer modal ref={this.drawerRef}>

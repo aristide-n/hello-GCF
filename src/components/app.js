@@ -28,6 +28,7 @@ export default class App extends Component {
 					<Profile path="/profile/" user="me" />
 					<Profile path="/profile/:user" />
 					<NotFound default />
+				{/*	add more routes here, i.e contacts and "my schedule"*/}
 				</Router>
 			</div>
 		);
