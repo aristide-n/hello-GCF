@@ -4,7 +4,7 @@ import LayoutGrid from 'preact-material-components/LayoutGrid';
 import 'preact-material-components/Card/style.css';
 import 'preact-material-components/LayoutGrid/style.css';
 import 'preact-material-components/Button/style.css';
-import style from './style';
+import style from './style.css';
 
 export default class Home extends Component {
 	render() {

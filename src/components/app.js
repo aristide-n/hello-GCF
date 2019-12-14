@@ -2,6 +2,7 @@ import { h, Component } from 'preact';
 import { Router } from 'preact-router';
 
 import Header from './header';
+import ContactsList from '../routes/contacts';
 import Home from '../routes/home';
 import Profile from '../routes/profile';
 import NotFound from '../routes/404';
@@ -15,20 +16,22 @@ export default class App extends Component {
 	 */
 	handleRoute = e => {
 		this.setState({
-			currentUrl: e.url
+			currentUrl: e.url,
+			topAppBarTitle: e.current.attributes.topAppBarTitle
 		});
 	};
 
 	render() {
 		return (
 			<div id="app">
-				<Header selectedRoute={this.state.currentUrl} />
+				<Header selectedRoute={this.state.currentUrl} topAppBarTitle={this.state.topAppBarTitle} />
 				<Router onChange={this.handleRoute}>
-					<Home path="/" />
-					<Profile path="/profile/" user="me" />
-					<Profile path="/profile/:user" />
-					<NotFound default />
-				{/*	add more routes here, i.e contacts and "my schedule"*/}
+					<Home path="/" topAppBarTitle="when available" />
+					<Profile path="/profile/" user="me"  topAppBarTitle="Profile" />
+					<Profile path="/profile/:user" topAppBarTitle="Foo" />
+					<ContactsList path="/contacts" topAppBarTitle="Contacts" />
+					<NotFound default topAppBarTitle="when available" />
+				{/*	add more routes here? i.e contacts and "my schedule"*/}
 				</Router>
 			</div>
 		);

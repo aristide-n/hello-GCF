@@ -15,9 +15,9 @@ import 'preact-material-components/TopAppBar/style.css';
 export default class Header extends Component {
 	closeDrawer() {
 		this.drawer.MDComponent.open = false;
-		this.state = {
+		this.setState({
 			darkThemeEnabled: false
-		};
+		});
 	}
 
 	openDrawer = () => (this.drawer.MDComponent.open = true);
@@ -27,13 +27,14 @@ export default class Header extends Component {
 	drawerRef = drawer => (this.drawer = drawer);
 	dialogRef = dialog => (this.dialog = dialog);
 
-	linkTo = path => () => {
+	linkTo = (path, topAppBarTitle) => () => {
 		route(path);
+		this.setState({ topAppBarTitle });
 		this.closeDrawer();
 	};
 
-	goHome = this.linkTo('/');
-	goToMyProfile = this.linkTo('/profile');
+	goToContactsList = this.linkTo('/contacts', 'Contacts');
+	goToMyProfile = this.linkTo('/profile', 'Profile');
 
 	toggleDarkTheme = () => {
 		this.setState(
@@ -61,8 +62,11 @@ export default class Header extends Component {
 							<TopAppBar.Icon menu onClick={this.openDrawer}>
 								menu
 							</TopAppBar.Icon>
-							<TopAppBar.Title>when available</TopAppBar.Title>
+							<TopAppBar.Title>
+								{this.state.topAppBarTitle || props.topAppBarTitle}
+							</TopAppBar.Title>
 						</TopAppBar.Section>
+
 						{/* TODO: an - restore settings? */}
 						{/*<TopAppBar.Section align-end shrink-to-fit onClick={this.openSettings}>*/}
 						{/*	<TopAppBar.Icon>settings</TopAppBar.Icon>*/}
@@ -71,9 +75,12 @@ export default class Header extends Component {
 				</TopAppBar>
 				<Drawer modal ref={this.drawerRef}>
 					<Drawer.DrawerContent>
-						<Drawer.DrawerItem selected={props.selectedRoute === '/'} onClick={this.goHome}>
-							<List.ItemGraphic>home</List.ItemGraphic>
-							Home
+						{/* dummy DrawerItem coz github.com/material-components/material-components-web/issues/762*/}
+						<Drawer.DrawerItem selected={props.selectedRoute === '/'} />
+						<Drawer.DrawerItem selected={props.selectedRoute === '/contacts'}
+							onClick={this.goToContactsList}>
+							<List.ItemGraphic>account_circle</List.ItemGraphic>
+							Contacts
 						</Drawer.DrawerItem>
 						<Drawer.DrawerItem selected={props.selectedRoute === '/profile'} onClick={this.goToMyProfile}>
 							<List.ItemGraphic>account_circle</List.ItemGraphic>
