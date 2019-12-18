@@ -31,7 +31,7 @@ export default class App extends Component {
 					<Profile path="/profile/:user" topAppBarTitle="Foo" />
 					<ContactsList path="/contacts" topAppBarTitle="Contacts" />
 					<NotFound default topAppBarTitle="when available" />
-				{/*	add more routes here? i.e contacts and "my schedule"*/}
+					{/*	add more routes here? i.e contacts and "my schedule"*/}
 				</Router>
 			</div>
 		);

@@ -10,7 +10,6 @@ import 'preact-material-components/Dialog/style.css';
 import 'preact-material-components/Drawer/style.css';
 import 'preact-material-components/List/style.css';
 import 'preact-material-components/TopAppBar/style.css';
-// import style from './style';
 
 export default class Header extends Component {
 	closeDrawer() {
@@ -76,9 +75,11 @@ export default class Header extends Component {
 				<Drawer modal ref={this.drawerRef}>
 					<Drawer.DrawerContent>
 						{/* dummy DrawerItem coz github.com/material-components/material-components-web/issues/762*/}
-						<Drawer.DrawerItem selected={props.selectedRoute === '/'} />
+						{/*formerly: <Drawer.DrawerItem selected={props.selectedRoute === '/'} />*/}
+						<Drawer.DrawerItem />
 						<Drawer.DrawerItem selected={props.selectedRoute === '/contacts'}
-							onClick={this.goToContactsList}>
+							onClick={this.goToContactsList}
+						>
 							<List.ItemGraphic>account_circle</List.ItemGraphic>
 							Contacts
 						</Drawer.DrawerItem>
