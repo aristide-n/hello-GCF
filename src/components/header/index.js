@@ -1,4 +1,4 @@
-import { h, Component } from 'preact';
+import { Component } from 'preact';
 import { route } from 'preact-router';
 import TopAppBar from 'preact-material-components/TopAppBar';
 import Drawer from 'preact-material-components/Drawer';
@@ -49,10 +49,9 @@ export default class Header extends Component {
 				}
 			}
 		);
-	}
+	};
 
 	render(props) {
-		console.log(props.selectedRoute);
 		return (
 			<div>
 				<TopAppBar className="topappbar">

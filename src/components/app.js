@@ -1,14 +1,15 @@
-import { h, Component } from 'preact';
+import { Component } from 'preact';
 import { Router } from 'preact-router';
+import { observer } from 'preact-mobx';
 
 import Header from './header';
 import ContactsList from '../routes/contacts';
 import Home from '../routes/home';
 import Profile from '../routes/profile';
 import NotFound from '../routes/404';
-// import Home from 'async!../routes/home';
-// import Profile from 'async!../routes/profile';
+import initState from '../state/initState';
 
+@observer
 export default class App extends Component {
 	/** Gets fired when the route changes.
 	 *	@param {Object} event		"change" event from [preact-router](http://git.io/preact-router)
@@ -21,7 +22,11 @@ export default class App extends Component {
 		});
 	};
 
-	render() {
+	componentDidMount() {
+		initState(this.props.contactStore);
+	}
+
+	render({ contactStore }) {
 		return (
 			<div id="app">
 				<Header selectedRoute={this.state.currentUrl} topAppBarTitle={this.state.topAppBarTitle} />
@@ -29,7 +34,7 @@ export default class App extends Component {
 					<Home path="/" topAppBarTitle="when available" />
 					<Profile path="/profile/" user="me"  topAppBarTitle="Profile" />
 					<Profile path="/profile/:user" topAppBarTitle="Foo" />
-					<ContactsList path="/contacts" topAppBarTitle="Contacts" />
+					<ContactsList path="/contacts" topAppBarTitle="Contacts" contactStore={contactStore}/>
 					<NotFound default topAppBarTitle="when available" />
 					{/*	add more routes here? i.e contacts and "my schedule"*/}
 				</Router>
