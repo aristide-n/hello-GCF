@@ -10,6 +10,7 @@ import 'preact-material-components/Dialog/style.css';
 import 'preact-material-components/Drawer/style.css';
 import 'preact-material-components/List/style.css';
 import 'preact-material-components/TopAppBar/style.css';
+import firebase from '../../state/firebase';
 
 export default class Header extends Component {
 	closeDrawer() {
@@ -51,6 +52,11 @@ export default class Header extends Component {
 		);
 	};
 
+	signOut() {
+		firebase.auth().signOut()
+			.catch(err => console.error('Error in sign out: ', err));
+	}
+
 	render(props) {
 		console.log(props.selectedRoute);
 		return (
@@ -64,6 +70,11 @@ export default class Header extends Component {
 							<TopAppBar.Title>
 								{this.state.topAppBarTitle || props.topAppBarTitle}
 							</TopAppBar.Title>
+						</TopAppBar.Section>
+
+						{/* TODO: an - hide this when not logged in */}
+						<TopAppBar.Section align-end shrink-to-fit onClick={this.signOut}>
+							<TopAppBar.Icon>exit_to_app</TopAppBar.Icon>
 						</TopAppBar.Section>
 
 						{/* TODO: an - restore settings? */}

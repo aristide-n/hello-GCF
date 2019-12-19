@@ -16,12 +16,11 @@ export default class ContactsList extends Component {
 	addContact(e) {
 		e.preventDefault();
 		const nameField = document.querySelector('#name-field');
-		const name = nameField.value;
-		nameField.value = null;
 
-		firestore.collection('contacts').doc().set({ name })
-			.then(()=>{})
-			.catch(err => alert('Error adding contact: ', err));
+		firestore.collection('contacts').doc().set({ name: nameField.value })
+			.catch(err => console.error('Error adding contact: ', err));
+
+		nameField.value = null;
 	}
 
 	render({ contactStore }) {

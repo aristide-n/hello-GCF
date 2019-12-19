@@ -10,6 +10,7 @@ import 'preact-material-components/Button/style.css';
 import 'preact-material-components/Card/style.css';
 import 'preact-material-components/LayoutGrid/style.css';
 import style from './style.css';
+import firebase from '../../state/firebase';
 
 export default class Home extends Component {
 
@@ -17,24 +18,42 @@ export default class Home extends Component {
 		const emailField = document.querySelector('#su-email-field');
 		const pwField = document.querySelector('#su-password-field');
 		const nameField = document.querySelector('#su-name-field');
+		//todo: an - validate email address? same for login
 
-		console.log(
-			'sign up: '
-			+ 'email - ' + emailField.value + ', ' + 'pw - ' + pwField.value + ', ' + 'name - ' + nameField.value
-		);
+		console.log('sign up: email -', emailField.value, ', pw -' + pwField.value, ', name -' + nameField.value);
+		firebase.auth().createUserWithEmailAndPassword(emailField.value, pwField.value)
+			.catch(err => console.error('Error in sign up:', err.message, '|', err.code));
+
+		emailField.value = null;
+		pwField.value = null;
+		nameField.value = null;
 	}
 
 	logIn () {
 		const emailField = document.querySelector('#li-email-field');
 		const pwField = document.querySelector('#li-password-field');
 
-		console.log('log in: ' + 'email - ' + emailField.value + ', ' + 'pw - ' + pwField.value);
+		console.log('log in: email -', emailField.value, ', pw -' + pwField.value);
+		firebase.auth().signInWithEmailAndPassword(emailField.value, pwField.value)
+			.catch(err => console.error('Error in log in:', err.message, '|', err.code));
+
 		emailField.value = null;
 		pwField.value = null;
 	}
 
 	openSignUpDialog = () => this.signUpDialog.MDComponent.show();
 	openLogInDialog = () => this.logInDialog.MDComponent.show();
+
+	componentDidMount() {
+		firebase.auth().onAuthStateChanged(function(user) {
+			if (user) {
+				console.log('current user: ', user.displayName, user.email, user.emailVerified, user.photoURL,
+					user.isAnonymous, user.uid, user.providerData);
+			} else {
+				console.log('signed out');
+			}
+		});
+	}
 
 	render() {
 		return (
