@@ -2,7 +2,6 @@ import { Component } from 'preact';
 import { observer } from 'preact-mobx';
 import List from 'preact-material-components/List';
 import Dialog from 'preact-material-components/Dialog';
-import Button from 'preact-material-components/Button';
 import TextField from 'preact-material-components/TextField';
 import 'preact-material-components/TextField/style.css';
 import 'preact-material-components/List/style.css';
@@ -48,7 +47,6 @@ export default class ContactsList extends Component {
 					</Dialog.Body>
 					<Dialog.Footer>
 						<Dialog.FooterButton accept={true}>Save</Dialog.FooterButton>
-						<Dialog.FooterButton cancel={true}>cancel</Dialog.FooterButton>
 					</Dialog.Footer>
 				</Dialog>
 			</div>
