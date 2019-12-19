@@ -52,6 +52,7 @@ export default class Header extends Component {
 	};
 
 	render(props) {
+		console.log(props.selectedRoute);
 		return (
 			<div>
 				<TopAppBar className="topappbar">
@@ -74,8 +75,7 @@ export default class Header extends Component {
 				<Drawer modal ref={this.drawerRef}>
 					<Drawer.DrawerContent>
 						{/* dummy DrawerItem coz github.com/material-components/material-components-web/issues/762*/}
-						{/*formerly: <Drawer.DrawerItem selected={props.selectedRoute === '/'} />*/}
-						<Drawer.DrawerItem />
+						<Drawer.DrawerItem selected={props.selectedRoute === '/'} />
 						<Drawer.DrawerItem selected={props.selectedRoute === '/contacts'}
 							onClick={this.goToContactsList}
 						>
