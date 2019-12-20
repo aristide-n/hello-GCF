@@ -68,7 +68,7 @@ export default class Header extends Component {
 								menu
 							</TopAppBar.Icon>
 							<TopAppBar.Title>
-								{this.state.topAppBarTitle || props.topAppBarTitle}
+								{props.topAppBarTitle || this.state.topAppBarTitle}
 							</TopAppBar.Title>
 						</TopAppBar.Section>
 

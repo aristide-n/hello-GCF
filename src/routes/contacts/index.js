@@ -8,7 +8,7 @@ import 'preact-material-components/List/style.css';
 import 'preact-material-components/Button/style.css';
 import 'preact-material-components/Dialog/style.css';
 import style from './style.css';
-import { firestore } from '../../state/firebase';
+import firebase, { firestore } from '../../state/firebase';
 
 @observer
 export default class ContactsList extends Component {
@@ -17,7 +17,8 @@ export default class ContactsList extends Component {
 		e.preventDefault();
 		const nameField = document.querySelector('#name-field');
 
-		firestore.collection('contacts').doc().set({ name: nameField.value })
+		firestore.collection('users/' + firebase.auth().currentUser.uid + '/contacts').doc()
+			.set({ name: nameField.value })
 			.catch(err => console.error('Error adding contact: ', err));
 
 		nameField.value = null;

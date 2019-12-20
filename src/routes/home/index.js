@@ -10,23 +10,36 @@ import 'preact-material-components/Button/style.css';
 import 'preact-material-components/Card/style.css';
 import 'preact-material-components/LayoutGrid/style.css';
 import style from './style.css';
-import firebase from '../../state/firebase';
+import firebase, { firestore } from '../../state/firebase';
 
 export default class Home extends Component {
 
 	signUp() {
 		const emailField = document.querySelector('#su-email-field');
 		const pwField = document.querySelector('#su-password-field');
-		const nameField = document.querySelector('#su-name-field');
+
 		//todo: an - validate email address? same for login
 
-		console.log('sign up: email -', emailField.value, ', pw -' + pwField.value, ', name -' + nameField.value);
+		console.log('sign up: email -', emailField.value, ', pw -', pwField.value);
 		firebase.auth().createUserWithEmailAndPassword(emailField.value, pwField.value)
+			.then(userCred => {
+				const nameField = document.querySelector('#su-name-field');
+
+				console.log('name - ', nameField.value);
+				userCred.user.updateProfile({ displayName: nameField.value })
+					.catch(err => console.error('Error in updateProfile:', err));
+				firestore.collection('users').doc(userCred.user.uid).set({
+					uid: userCred.user.uid,
+					email: userCred.user.email,
+					name: nameField.value
+				}).catch(err => console.error('Error adding user: ', err));
+
+				nameField.value = null;
+			})
 			.catch(err => console.error('Error in sign up:', err.message, '|', err.code));
 
 		emailField.value = null;
 		pwField.value = null;
-		nameField.value = null;
 	}
 
 	logIn () {
@@ -43,17 +56,6 @@ export default class Home extends Component {
 
 	openSignUpDialog = () => this.signUpDialog.MDComponent.show();
 	openLogInDialog = () => this.logInDialog.MDComponent.show();
-
-	componentDidMount() {
-		firebase.auth().onAuthStateChanged(function(user) {
-			if (user) {
-				console.log('current user: ', user.displayName, user.email, user.emailVerified, user.photoURL,
-					user.isAnonymous, user.uid, user.providerData);
-			} else {
-				console.log('signed out');
-			}
-		});
-	}
 
 	render() {
 		return (

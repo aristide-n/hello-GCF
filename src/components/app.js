@@ -1,5 +1,5 @@
 import { Component } from 'preact';
-import { Router } from 'preact-router';
+import { route, Router } from 'preact-router';
 import { observer } from 'preact-mobx';
 
 import Header from './header';
@@ -8,6 +8,7 @@ import Home from '../routes/home';
 import Profile from '../routes/profile';
 import NotFound from '../routes/404';
 import initState from '../state/initState';
+import firebase from '../state/firebase';
 
 @observer
 export default class App extends Component {
@@ -20,10 +21,34 @@ export default class App extends Component {
 			currentUrl: e.url,
 			topAppBarTitle: e.current.attributes.topAppBarTitle
 		});
+
+		// todo: an - looks like this isn't necessary, eventually remove it
+		// if (!firebase.auth().currentUser) {
+		// 	this.setState({
+		// 		topAppBarTitle: 'when available'
+		// 	});
+		// 	route('/');
+		// }
 	};
 
 	componentDidMount() {
-		initState(this.props.contactStore);
+		var that = this;
+		firebase.auth().onAuthStateChanged(function(user) {
+			if (user) {
+				console.log('current user: ', user.displayName, user.email, user.emailVerified, user.photoURL,
+					user.isAnonymous, user.uid, user.providerData);
+				initState(that.props.contactStore);
+				route('/contacts');
+			} else {
+				console.log('signed out');
+				if (!that.props.contactStore.contacts.empty)
+					that.props.contactStore.contacts = [];
+				that.setState({
+					topAppBarTitle: 'when available'
+				});
+				route('/');
+			}
+		});
 	}
 
 	render({ contactStore }) {
