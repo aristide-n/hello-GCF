@@ -59,6 +59,16 @@ export default class Header extends Component {
 
 	render(props) {
 		console.log(props.selectedRoute);
+		let logoutButton;
+
+		if (firebase.auth().currentUser) {
+			logoutButton = (
+				<TopAppBar.Section align-end shrink-to-fit onClick={this.signOut}>
+					<TopAppBar.Icon>exit_to_app</TopAppBar.Icon>
+				</TopAppBar.Section>
+			);
+		}
+
 		return (
 			<div>
 				<TopAppBar className="topappbar">
@@ -72,10 +82,7 @@ export default class Header extends Component {
 							</TopAppBar.Title>
 						</TopAppBar.Section>
 
-						{/* TODO: an - hide this when not logged in */}
-						<TopAppBar.Section align-end shrink-to-fit onClick={this.signOut}>
-							<TopAppBar.Icon>exit_to_app</TopAppBar.Icon>
-						</TopAppBar.Section>
+						{logoutButton}
 
 						{/* TODO: an - restore settings? */}
 						{/*<TopAppBar.Section align-end shrink-to-fit onClick={this.openSettings}>*/}
