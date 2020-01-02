@@ -17,18 +17,18 @@ export default class App extends Component {
 	 *	@param {string} event.url	The newly routed URL
 	 */
 	handleRoute = e => {
+		// todo: an - looks like this isn't necessary, eventually remove it?
+		if (!firebase.auth().currentUser) {
+			this.setState({
+				topAppBarTitle: 'when available'
+			});
+			route('/');
+		}
+
 		this.setState({
 			currentUrl: e.url,
 			topAppBarTitle: e.current.attributes.topAppBarTitle
 		});
-
-		// todo: an - looks like this isn't necessary, eventually remove it
-		// if (!firebase.auth().currentUser) {
-		// 	this.setState({
-		// 		topAppBarTitle: 'when available'
-		// 	});
-		// 	route('/');
-		// }
 	};
 
 	componentDidMount() {
