@@ -1,8 +1,8 @@
 import { observable, action } from 'mobx';
 
 class Contact {
-	@observable id
-	@observable name
+	@observable id;
+	@observable name;
 
 	constructor(id, contact) {
 		this.id = id;

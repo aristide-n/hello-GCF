@@ -13,6 +13,18 @@ import firebase, { firestore } from '../../state/firebase';
 @observer
 export default class ContactsList extends Component {
 
+	inviteContact(e) {
+		e.preventDefault();
+		const emailField = document.querySelector('#email-field');
+
+		// query firestore to see if user with email exists -> ref1
+		//   if not, lookup email in non-user-invitations col -> ref2
+		// add other-ref to outgoing invitations sub-col of current user
+		// add this-ref to incoming  invitations sub-col of ref1 or ref2
+
+		emailField.value = null;
+	}
+
 	addContact(e) {
 		e.preventDefault();
 		const nameField = document.querySelector('#name-field');
@@ -34,16 +46,30 @@ export default class ContactsList extends Component {
 							<List.TextContainer>{contact.name}</List.TextContainer>
 						</List.Item>
 					))}
-					<List.Item onClick={()=>{this.dialog.MDComponent.show();}}>
+					<List.Item onClick={()=>{this.oldDialog.MDComponent.show();}}>
 						<List.ItemGraphic>add_circle_outline</List.ItemGraphic>
 						<List.TextContainer>Add a Contact</List.TextContainer>
 					</List.Item>
+					<List.Item onClick={()=>{this.newDialog.MDComponent.show();}}>
+						<List.ItemGraphic>add_circle_outline</List.ItemGraphic>
+						<List.TextContainer>Invite a Contact</List.TextContainer>
+					</List.Item>
 				</List>
 
-				<Dialog ref={el => { this.dialog = el; }} onAccept={this.addContact.bind(this)}>
+				<Dialog ref={el => { this.oldDialog = el; }} onAccept={this.addContact.bind(this)}>
 					<Dialog.Header>Add a Contact</Dialog.Header>
 					<Dialog.Body>
 						<TextField label="Name" outlined id="name-field"/>
+					</Dialog.Body>
+					<Dialog.Footer>
+						<Dialog.FooterButton accept={true}>Save</Dialog.FooterButton>
+					</Dialog.Footer>
+				</Dialog>
+
+				<Dialog ref={el => { this.newDialog = el; }} onAccept={this.inviteContact.bind(this)}>
+					<Dialog.Header>Invite a Contact</Dialog.Header>
+					<Dialog.Body>
+						<TextField label="Email" outlined id="email-field"/>
 					</Dialog.Body>
 					<Dialog.Footer>
 						<Dialog.FooterButton accept={true}>Save</Dialog.FooterButton>
