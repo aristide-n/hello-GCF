@@ -58,7 +58,7 @@ export default class Header extends Component {
 	}
 
 	render(props) {
-		console.log(props.selectedRoute);
+		console.log('selectedRoute: ', props.selectedRoute);
 		let logoutButton;
 
 		if (firebase.auth().currentUser) {
