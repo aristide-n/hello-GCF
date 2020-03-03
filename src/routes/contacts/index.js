@@ -22,18 +22,31 @@ export default class ContactsList extends Component {
 		document.querySelector('#email-field').value = null;
 
 		// todo: validate email more throroughly
-		if (contactEmail == firebase.auth().currentUser.email) return;
+		if (contactEmail == firebase.auth().currentUser.email) throw "can't invite yourself silly!";
 
 		// todo - maybe use transaction(s) somewhere in here?
-		// check if this contact has already been invited, todo - check in a cached list of emails in state/ later
-		firestore.collection('users/' + firebase.auth().currentUser.uid + '/outgoing_invitations')
-			.where('email', '==', contactEmail)
-			.get()
-			.then(snapshot => {
-					if (snapshot.empty) this.inviteContactHelper(contactEmail);
-					else console.log('contact has already been invited');
-				}
-			)
+		// check if this contact has already been invited or added,
+		// todo - check in a cached list of emails in state/ later
+		Promise.all([
+			firestore.collection('users/' + firebase.auth().currentUser.uid + '/outgoing_invitations')
+				.where('email', '==', contactEmail)
+				.get()
+				.then(snapshot => {
+						if (!snapshot.empty) {
+							return Promise.reject("contact has already been invited");
+						}
+					}
+				),
+			firestore.collection('users/' + firebase.auth().currentUser.uid + '/contacts')
+				.where('email', '==', contactEmail)
+				.get()
+				.then(snapshot => {
+						if (!snapshot.empty) {
+							return Promise.reject("contact has already been added");
+						}
+					}
+				)
+		]).then(_ => this.inviteContactHelper(contactEmail));
 	}
 
 	inviteContactHelper(contactEmail) {
@@ -102,14 +115,15 @@ export default class ContactsList extends Component {
 		const currentUserRef = firestore.collection('users').doc(firebase.auth().currentUser.uid);
 
 		// create contact doc
-		currentUserRef.collection('contacts').doc()
-			.set({userRef: fromUserRef})
-			.catch(err => console.error('Error adding contact: ', err));
-		// delete incoming invitations doc
-		currentUserRef.collection('incoming_invitations').where('userRef', '==', fromUserRef).get()
-			.then(snapshot => snapshot.docs[0].ref.delete())
-			.catch(err => console.error('Error deleting incoming_invitations doc: ', err));
+		fromUserRef.get()
+			.then(fromUserSnap => {
+				currentUserRef.collection('contacts').doc()
+					.set({userRef: fromUserRef, email: fromUserSnap.data().email})
+					.catch(err => console.error('Error adding contact: ', err));
+			});
 
+		// delete incoming invitations doc
+		this.deleteIncomingInvitationDoc(fromUserRef, currentUserRef);
 		// set isAccepted flag to true in fromUser's outgoing invitation doc
 		fromUserRef.collection('outgoing_invitations').where('contactRef', '==', currentUserRef).get()
 			.then(snapshot => snapshot.docs[0].ref.update({isAccepted: true}))
@@ -118,6 +132,18 @@ export default class ContactsList extends Component {
 
 	declineInvitation(fromUserRef) {
 		console.log('decline ', fromUserRef);
+		const currentUserRef = firestore.collection('users').doc(firebase.auth().currentUser.uid);
+		this.deleteIncomingInvitationDoc(fromUserRef, currentUserRef);
+		// set isDeclined flag to true in fromUser's outgoing invitation doc
+		fromUserRef.collection('outgoing_invitations').where('contactRef', '==', currentUserRef).get()
+			.then(snapshot => snapshot.docs[0].ref.update({isDeclined: true}))
+			.catch(err => console.error('Error updating isDeclined in outgoing_invitations doc: ', err));
+	}
+
+	deleteIncomingInvitationDoc(fromUserRef, currentUserRef) {
+		currentUserRef.collection('incoming_invitations').where('userRef', '==', fromUserRef).get()
+			.then(snapshot => snapshot.docs[0].ref.delete())
+			.catch(err => console.error('Error deleting incoming_invitations doc: ', err));
 	}
 
 	render({ contactStore }) {

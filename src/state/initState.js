@@ -8,14 +8,21 @@ const initState = contactStore => {
 					case 'added':
 					case 'modified':
 						// todo - this feels error prone, look for bugs and see if I can refactor it
-						if (docChange.doc.data().isAccepted) {
-							// create contact doc
-							currentUserRef.collection('contacts').doc()
-								.set({userRef: docChange.doc.data().contactRef})
-								.catch(err => console.error('Error adding contact: ', err));
+						if (docChange.doc.data().isAccepted || docChange.doc.data().isDeclined) {
 							// delete outgoing invite doc
 							docChange.doc.ref.delete()
 								.catch(err => console.error('Error deleting outgoing_invitations doc: ', err));
+							if (docChange.doc.data().isAccepted) {
+								console.log('adding contact: ', docChange.doc.data().contactRef);
+								// create new contact doc
+								currentUserRef.collection('contacts').doc()
+									// todo: use the email from the latest snapshot, !from the outgoing_invitations doc?
+									// todo: fix bug 1 - multiple contact docs created with the same data and some extra weirdness
+									// bug 2 - users sometimes see other users' invitations (e.g. when one user logs in after
+									// another and sends the last user an invitation)
+									.set({ userRef: docChange.doc.data().contactRef, email: docChange.doc.data().email})
+									.catch(err => console.error('Error adding contact: ', err));
+							}
 						} else {
 							contactStore.addOutgoingInvitation(docChange.doc.id, docChange.doc.data());
 						}
