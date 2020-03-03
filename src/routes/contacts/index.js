@@ -106,16 +106,42 @@ export default class ContactsList extends Component {
 		return (
 			<div class={`${style.contactsList} page`}>
 				<List avatar-list>
-					{contactStore.outgoingInvitations && contactStore.outgoingInvitations.map(contact => (
-						<List.Item>
-							<List.ItemGraphic>perm_identity</List.ItemGraphic>
-							<List.TextContainer>{contact.email}</List.TextContainer>
-						</List.Item>
-					))}
 					<List.Item onClick={()=>{this.inviteDialog.MDComponent.show();}}>
 						<List.ItemGraphic>add_circle_outline</List.ItemGraphic>
 						<List.TextContainer>Invite a Contact</List.TextContainer>
 					</List.Item>
+
+					{contactStore.incomingInvitations.length > 0 &&
+					<List.Item>
+						<List.TextContainer>
+							Incoming Invitations ({contactStore.incomingInvitations.length})
+						</List.TextContainer>
+					</List.Item>
+					}
+					{contactStore.incomingInvitations.length > 0 &&
+						contactStore.incomingInvitations.map(fromUser => (
+							<List.Item>
+								<List.ItemGraphic>perm_identity</List.ItemGraphic>
+								<List.TextContainer>{fromUser.fromUserName}</List.TextContainer>
+							</List.Item>
+						))
+					}
+
+					{contactStore.outgoingInvitations.length > 0 &&
+						<List.Item>
+							<List.TextContainer>
+								Outgoing Invitations ({contactStore.outgoingInvitations.length})
+							</List.TextContainer>
+						</List.Item>
+					}
+					{contactStore.outgoingInvitations.length > 0 &&
+						contactStore.outgoingInvitations.map(invitation => (
+							<List.Item>
+								<List.ItemGraphic>perm_identity</List.ItemGraphic>
+								<List.TextContainer>{invitation.email}</List.TextContainer>
+							</List.Item>
+						))
+					}
 				</List>
 
 				<Dialog ref={el => { this.inviteDialog = el; }} onAccept={this.inviteContact.bind(this)}>

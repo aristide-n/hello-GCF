@@ -43,6 +43,8 @@ export default class App extends Component {
 				console.log('signed out');
 				if (!that.props.contactStore.outgoingInvitations.empty)
 					that.props.contactStore.outgoingInvitations = [];
+				if (!that.props.contactStore.incomingInvitations.empty)
+					that.props.contactStore.incomingInvitations = [];
 				that.setState({
 					topAppBarTitle: 'when available'
 				});
