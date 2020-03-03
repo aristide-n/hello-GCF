@@ -6,8 +6,7 @@ class Contact {
 
 	constructor(id, contact) {
 		this.id = id;
-		this.name = contact.name;
-		this.foo = contact.name;
+		this.email = contact.email;
 	}
 }
 

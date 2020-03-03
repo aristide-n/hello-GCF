@@ -102,17 +102,6 @@ export default class ContactsList extends Component {
 			});
 	}
 
-	addContact(e) {
-		e.preventDefault();
-		const nameField = document.querySelector('#name-field');
-
-		firestore.collection('users/' + firebase.auth().currentUser.uid + '/contacts').doc()
-			.set({ name: nameField.value })
-			.catch(err => console.error('Error adding contact: ', err));
-
-		nameField.value = null;
-	}
-
 	render({ contactStore }) {
 		return (
 			<div class={`${style.contactsList} page`}>
@@ -120,30 +109,16 @@ export default class ContactsList extends Component {
 					{contactStore.contacts && contactStore.contacts.map(contact => (
 						<List.Item>
 							<List.ItemGraphic>perm_identity</List.ItemGraphic>
-							<List.TextContainer>{contact.name}</List.TextContainer>
+							<List.TextContainer>{contact.email}</List.TextContainer>
 						</List.Item>
 					))}
-					<List.Item onClick={()=>{this.oldDialog.MDComponent.show();}}>
-						<List.ItemGraphic>add_circle_outline</List.ItemGraphic>
-						<List.TextContainer>Add a Contact</List.TextContainer>
-					</List.Item>
-					<List.Item onClick={()=>{this.newDialog.MDComponent.show();}}>
+					<List.Item onClick={()=>{this.inviteDialog.MDComponent.show();}}>
 						<List.ItemGraphic>add_circle_outline</List.ItemGraphic>
 						<List.TextContainer>Invite a Contact</List.TextContainer>
 					</List.Item>
 				</List>
 
-				<Dialog ref={el => { this.oldDialog = el; }} onAccept={this.addContact.bind(this)}>
-					<Dialog.Header>Add a Contact</Dialog.Header>
-					<Dialog.Body>
-						<TextField label="Name" outlined id="name-field"/>
-					</Dialog.Body>
-					<Dialog.Footer>
-						<Dialog.FooterButton accept={true}>Save</Dialog.FooterButton>
-					</Dialog.Footer>
-				</Dialog>
-
-				<Dialog ref={el => { this.newDialog = el; }} onAccept={this.inviteContact.bind(this)}>
+				<Dialog ref={el => { this.inviteDialog = el; }} onAccept={this.inviteContact.bind(this)}>
 					<Dialog.Header>Invite a Contact</Dialog.Header>
 					<Dialog.Body>
 						<TextField label="Email" outlined id="email-field"/>

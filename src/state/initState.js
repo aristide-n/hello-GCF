@@ -2,7 +2,7 @@ import firebase, { firestore } from './firebase';
 
 const initState = contactStore => {
 	firestore
-		.collection('users/' + firebase.auth().currentUser.uid + '/contacts')
+		.collection('users/' + firebase.auth().currentUser.uid + '/outgoing_invitations')
 		.onSnapshot((snapshot) => {
 			snapshot.docChanges().forEach((docChange) => {
 				switch (docChange.type) {
