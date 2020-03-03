@@ -41,10 +41,10 @@ export default class App extends Component {
 				route('/contacts');
 			} else {
 				console.log('signed out');
-				if (!that.props.contactStore.outgoingInvitations.empty)
-					that.props.contactStore.outgoingInvitations = [];
-				if (!that.props.contactStore.incomingInvitations.empty)
-					that.props.contactStore.incomingInvitations = [];
+				if (that.props.contactStore.outgoingInvitations.size > 0)
+					that.props.contactStore.outgoingInvitations = new Map();
+				if (that.props.contactStore.incomingInvitations.size > 0)
+					that.props.contactStore.incomingInvitations = new Map();
 				that.setState({
 					topAppBarTitle: 'when available'
 				});
