@@ -41,8 +41,8 @@ export default class App extends Component {
 				route('/contacts');
 			} else {
 				console.log('signed out');
-				if (!that.props.contactStore.contacts.empty)
-					that.props.contactStore.contacts = [];
+				if (!that.props.contactStore.outgoingInvitations.empty)
+					that.props.contactStore.outgoingInvitations = [];
 				that.setState({
 					topAppBarTitle: 'when available'
 				});

@@ -1,8 +1,8 @@
 import { observable, action } from 'mobx';
 
-class Contact {
+class OutgoingInvitation {
 	@observable id;
-	@observable name;
+	@observable email;
 
 	constructor(id, contact) {
 		this.id = id;
@@ -11,11 +11,11 @@ class Contact {
 }
 
 class ContactStore {
-	@observable contacts = [];
+	@observable outgoingInvitations = [];
 
-	@action addContact(id, contact) {
-		this.contacts.push(
-			new Contact(id, contact)
+	@action addOutgoingInvitation(id, contact) {
+		this.outgoingInvitations.push(
+			new OutgoingInvitation(id, contact)
 		);
 	}
 }

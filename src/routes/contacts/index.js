@@ -106,7 +106,7 @@ export default class ContactsList extends Component {
 		return (
 			<div class={`${style.contactsList} page`}>
 				<List avatar-list>
-					{contactStore.contacts && contactStore.contacts.map(contact => (
+					{contactStore.outgoingInvitations && contactStore.outgoingInvitations.map(contact => (
 						<List.Item>
 							<List.ItemGraphic>perm_identity</List.ItemGraphic>
 							<List.TextContainer>{contact.email}</List.TextContainer>

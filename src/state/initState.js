@@ -7,7 +7,7 @@ const initState = contactStore => {
 			snapshot.docChanges().forEach((docChange) => {
 				switch (docChange.type) {
 					case 'added':
-						contactStore.addContact(docChange.doc.id, docChange.doc.data());
+						contactStore.addOutgoingInvitation(docChange.doc.id, docChange.doc.data());
 						break;
 					default:
 						console.error('Can not remove or modify contacts yet!');
