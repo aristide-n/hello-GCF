@@ -1,5 +1,6 @@
 import { Component } from 'preact';
 import { route } from 'preact-router';
+import { observer } from 'preact-mobx';
 import TopAppBar from 'preact-material-components/TopAppBar';
 import Drawer from 'preact-material-components/Drawer';
 import List from 'preact-material-components/List';
@@ -15,6 +16,7 @@ import 'preact-material-components/Typography/style.css';
 import style from './style.css';
 import firebase from '../../state/firebase';
 
+@observer
 export default class Header extends Component {
 	closeDrawer() {
 		this.drawer.MDComponent.open = false;
@@ -90,7 +92,7 @@ export default class Header extends Component {
 						</TopAppBar.Section>
 
 						<TopAppBar.Section>
-							<Switch class={`${style.switchAvailability}`} onChange={this.toggleAvailability} />
+							<Switch checked class={`${style.switchAvailability}`} onChange={this.toggleAvailability} />
 							<Typography body1>
 								You are currently Unavailable
 							</Typography>

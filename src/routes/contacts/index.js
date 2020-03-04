@@ -13,7 +13,6 @@ import 'preact-material-components/Button/style.css';
 import 'preact-material-components/Typography/style.css';
 import style from './style.css';
 import firebase, { firestore } from '../../state/firebase';
-import { when } from 'mobx';
 
 @observer
 export default class ContactsList extends Component {
@@ -198,8 +197,9 @@ export default class ContactsList extends Component {
 						</List.Item>
 					))
 					}
+
 					<List.Item onClick={()=>{this.inviteDialog.MDComponent.show();}}>
-						<List.ItemGraphic>add_circle_outline</List.ItemGraphic>
+						<List.ItemGraphic>add_circle</List.ItemGraphic>
 						<List.TextContainer>Send an Invitation</List.TextContainer>
 					</List.Item>
 
