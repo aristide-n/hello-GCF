@@ -152,11 +152,6 @@ export default class ContactsList extends Component {
 		return (
 			<div class={`${style.contactsList} page`}>
 				<List avatar-list>
-					<List.Item onClick={()=>{this.inviteDialog.MDComponent.show();}}>
-						<List.ItemGraphic>add_circle_outline</List.ItemGraphic>
-						<List.TextContainer>Invite a Contact</List.TextContainer>
-					</List.Item>
-
 					{contactStore.incomingInvitations.size > 0 &&
 					<List.Item>
 						<List.TextContainer>
@@ -203,6 +198,10 @@ export default class ContactsList extends Component {
 						</List.Item>
 					))
 					}
+					<List.Item onClick={()=>{this.inviteDialog.MDComponent.show();}}>
+						<List.ItemGraphic>add_circle_outline</List.ItemGraphic>
+						<List.TextContainer>Send an Invitation</List.TextContainer>
+					</List.Item>
 
 					{contactStore.outgoingInvitations.size > 0 &&
 						<List.Item>

@@ -5,11 +5,14 @@ import Drawer from 'preact-material-components/Drawer';
 import List from 'preact-material-components/List';
 import Dialog from 'preact-material-components/Dialog';
 import Switch from 'preact-material-components/Switch';
-import 'preact-material-components/Switch/style.css';
+import Typography from 'preact-material-components/Typography';
 import 'preact-material-components/Dialog/style.css';
 import 'preact-material-components/Drawer/style.css';
 import 'preact-material-components/List/style.css';
 import 'preact-material-components/TopAppBar/style.css';
+import 'preact-material-components/Switch/style.css';
+import 'preact-material-components/Typography/style.css';
+import style from './style.css';
 import firebase from '../../state/firebase';
 
 export default class Header extends Component {
@@ -57,6 +60,10 @@ export default class Header extends Component {
 			.catch(err => console.error('Error in sign out: ', err));
 	}
 
+	toggleAvailability() {
+		console.log('hey!!');
+	}
+
 	render(props) {
 		console.log('selectedRoute: ', props.selectedRoute);
 		let logoutButton;
@@ -80,6 +87,13 @@ export default class Header extends Component {
 							<TopAppBar.Title>
 								{props.topAppBarTitle || this.state.topAppBarTitle}
 							</TopAppBar.Title>
+						</TopAppBar.Section>
+
+						<TopAppBar.Section>
+							<Switch class={`${style.switchAvailability}`} onChange={this.toggleAvailability} />
+							<Typography body1>
+								You are currently Unavailable
+							</Typography>
 						</TopAppBar.Section>
 
 						{logoutButton}
