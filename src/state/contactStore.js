@@ -22,6 +22,18 @@ class IncomingInvitation {
 	}
 }
 
+class Contact {
+	@observable id;
+	@observable name;
+	@observable email;
+
+	constructor(id, contact) {
+		this.id = id;
+		this.name = contact.name;
+		this.email = contact.email;
+	}
+}
+
 class ContactStore {
 	@observable outgoingInvitations = new Map();
 	@observable incomingInvitations = new Map();
@@ -33,6 +45,10 @@ class ContactStore {
 
 	@action addIncomingInvitation(id, fromUser, fromUserRef) {
 		this.incomingInvitations.set(id, new IncomingInvitation(id, fromUser, fromUserRef));
+	}
+
+	@action addContact(id, contact) {
+		this.contacts.set(id, new Contact(id, contact));
 	}
 
 	@action removeOutgoingInvitation(id) {

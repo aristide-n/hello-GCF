@@ -4,11 +4,13 @@ import List from 'preact-material-components/List';
 import Dialog from 'preact-material-components/Dialog';
 import TextField from 'preact-material-components/TextField';
 import Button from 'preact-material-components/Button';
+import Typography from 'preact-material-components/Typography';
 import 'preact-material-components/TextField/style.css';
 import 'preact-material-components/List/style.css';
 import 'preact-material-components/Button/style.css';
 import 'preact-material-components/Dialog/style.css';
 import 'preact-material-components/Button/style.css';
+import 'preact-material-components/Typography/style.css';
 import style from './style.css';
 import firebase, { firestore } from '../../state/firebase';
 import { when } from 'mobx';
@@ -22,7 +24,7 @@ export default class ContactsList extends Component {
 		document.querySelector('#email-field').value = null;
 
 		// todo: validate email more throroughly
-		if (contactEmail == firebase.auth().currentUser.email) throw "can't invite yourself silly!";
+		if (contactEmail === firebase.auth().currentUser.email) throw "can't invite yourself silly!";
 
 		// todo - maybe use transaction(s) somewhere in here?
 		// check if this contact has already been invited or added,
@@ -158,7 +160,9 @@ export default class ContactsList extends Component {
 					{contactStore.incomingInvitations.size > 0 &&
 					<List.Item>
 						<List.TextContainer>
-							Incoming Invitations ({contactStore.incomingInvitations.size})
+							<Typography overline>
+								INVITATIONS ({contactStore.incomingInvitations.size})
+							</Typography>
 						</List.TextContainer>
 					</List.Item>
 					}
@@ -182,10 +186,30 @@ export default class ContactsList extends Component {
 						))
 					}
 
+					{contactStore.contacts.size > 0 &&
+					<List.Item>
+						<List.TextContainer>
+							<Typography overline>
+								CONTACTS ({contactStore.contacts.size})
+							</Typography>
+						</List.TextContainer>
+					</List.Item>
+					}
+					{contactStore.contacts.size > 0 &&
+					Array.from(contactStore.contacts.values()).map(contact => (
+						<List.Item>
+							<List.ItemGraphic>perm_identity</List.ItemGraphic>
+							<List.TextContainer>{contact.name}</List.TextContainer>
+						</List.Item>
+					))
+					}
+
 					{contactStore.outgoingInvitations.size > 0 &&
 						<List.Item>
 							<List.TextContainer>
-								Outgoing Invitations ({contactStore.outgoingInvitations.size})
+								<Typography overline>
+									INVITATIONS YOU SENT ({contactStore.outgoingInvitations.size})
+								</Typography>
 							</List.TextContainer>
 						</List.Item>
 					}
