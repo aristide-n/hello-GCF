@@ -3,7 +3,7 @@ import { route } from 'preact-router';
 import { observer } from 'preact-mobx';
 import TopAppBar from 'preact-material-components/TopAppBar';
 import Drawer from 'preact-material-components/Drawer';
-import List from 'preact-material-components/List';
+// import List from 'preact-material-components/List';
 import Dialog from 'preact-material-components/Dialog';
 import Switch from 'preact-material-components/Switch';
 import Typography from 'preact-material-components/Typography';
@@ -57,15 +57,26 @@ export default class Header extends Component {
 		);
 	};
 
-	signOut() {
+	signOut(contactStore) {
+		contactStore.snapshotFuncs.forEach(unsubscribeFunc => unsubscribeFunc());
 		firebase.auth().signOut()
 			.catch(err => console.error('Error in sign out: ', err));
+		contactStore.resetState();
 	}
 
 	toggleAvailability(contactStore) {
+		const newAvailabilityVal = !contactStore.currentUserIsAvailable;
 		firestore.collection('users').doc(firebase.auth().currentUser.uid)
-			.update({isAvailable: !contactStore.currentUserIsAvailable})
+			.update({isAvailable: newAvailabilityVal})
 			.catch(err => console.error('error toggling availability:', err));
+		firestore.collectionGroup('contacts').where('email', '==', firebase.auth().currentUser.email).get()
+			.then(snapshot =>
+				snapshot.docs.forEach(docSnapshot =>
+					docSnapshot.ref.update({isAvailable: newAvailabilityVal}).catch(err =>
+						console.error('error updating contact availability')
+					)
+				)
+			);
 	}
 
 	render(props) {
@@ -75,7 +86,7 @@ export default class Header extends Component {
 
 		if (firebase.auth().currentUser) {
 			logoutButton = (
-				<TopAppBar.Section align-end shrink-to-fit onClick={this.signOut}>
+				<TopAppBar.Section align-end shrink-to-fit onClick={this.signOut.bind(this, props.contactStore)}>
 					<TopAppBar.Icon>exit_to_app</TopAppBar.Icon>
 				</TopAppBar.Section>
 			);

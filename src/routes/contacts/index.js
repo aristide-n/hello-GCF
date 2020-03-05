@@ -119,7 +119,8 @@ export default class ContactsList extends Component {
 		fromUserRef.get()
 			.then(fromUserSnap => {
 				currentUserRef.collection('contacts').doc()
-					.set({userRef: fromUserRef, email: fromUserSnap.data().email})
+					.set({userRef: fromUserRef, email: fromUserSnap.data().email,
+						isAvailable: fromUserSnap.data().isAvailable})
 					.catch(err => console.error('Error adding contact: ', err));
 			});
 
@@ -191,7 +192,7 @@ export default class ContactsList extends Component {
 					}
 					{contactStore.contacts.size > 0 &&
 					Array.from(contactStore.contacts.values()).map(contact => (
-						<List.Item>
+						<List.Item style={{ background: contact.isAvailable ? '#e8f5e9' : '#fafafa' }}>
 							<List.ItemGraphic>perm_identity</List.ItemGraphic>
 							<List.TextContainer>{contact.name}</List.TextContainer>
 						</List.Item>

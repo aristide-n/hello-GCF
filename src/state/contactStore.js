@@ -26,11 +26,13 @@ class Contact {
 	@observable id;
 	@observable name;
 	@observable email;
+	@observable isAvailable;
 
 	constructor(id, contact) {
 		this.id = id;
 		this.name = contact.name;
 		this.email = contact.email;
+		this.isAvailable = contact.isAvailable;
 	}
 }
 
@@ -39,6 +41,7 @@ class ContactStore {
 	@observable incomingInvitations = new Map();
 	@observable contacts = new Map();
 	@observable currentUserIsAvailable;
+	snapshotFuncs = [];
 
 	@action addOutgoingInvitation(id, invitation) {
 		this.outgoingInvitations.set(id, new OutgoingInvitation(id, invitation));
@@ -58,6 +61,18 @@ class ContactStore {
 
 	@action removeIncomingInvitation(id) {
 		this.incomingInvitations.delete(id);
+	}
+
+	@action updateContact(id, contact) {
+		this.contacts.get(id).isAvailable = contact.isAvailable;
+	}
+
+	resetState() {
+		this.currentUserIsAvailable = null;
+		if (this.incomingInvitations.size > 0) this.incomingInvitations = new Map();
+		if (this.contacts.size > 0) this.contacts = new Map();
+		if (this.outgoingInvitations.size > 0) this.outgoingInvitations = new Map();
+		this.snapshotFuncs = [];
 	}
 }
 

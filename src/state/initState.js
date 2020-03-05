@@ -3,18 +3,14 @@ import firebase, { firestore } from './firebase';
 const initState = contactStore => {
 	// bug? - users sometimes see other users' invitations (e.g. when one user logs in after another and sends the last
 	// user an invitation). It may have been fixed side effectedly.
-	contactStore.currentUserIsAvailable = null;
-	if (contactStore.incomingInvitations.size > 0)
-		contactStore.incomingInvitations = new Map();
-	if (contactStore.contacts.size > 0)
-		contactStore.contacts = new Map();
-	if (contactStore.outgoingInvitations.size > 0)
-		contactStore.outgoingInvitations = new Map();
+	contactStore.resetState();
+
 	const currentUserRef = firestore.collection('users').doc(firebase.auth().currentUser.uid);
 
-	currentUserRef.onSnapshot(userSnap => contactStore.currentUserIsAvailable = userSnap.data().isAvailable);
+	contactStore.snapshotFuncs.push(
+		currentUserRef.onSnapshot(userSnap => contactStore.currentUserIsAvailable = userSnap.data().isAvailable));
 
-	currentUserRef.collection('incoming_invitations').onSnapshot(snapshot => {
+	contactStore.snapshotFuncs.push(currentUserRef.collection('incoming_invitations').onSnapshot(snapshot => {
 			snapshot.docChanges().forEach((docChange) => {
 				switch (docChange.type) {
 					case 'added':
@@ -33,37 +29,36 @@ const initState = contactStore => {
 						break;
 				}
 			});
-		});
+		}));
 
-	currentUserRef.collection('contacts').onSnapshot(snapshot => {
-		snapshot.docChanges().forEach((docChange) => {
-			switch (docChange.type) {
-				case 'added':
-					docChange.doc.data().userRef.get()
-						.then(contactSnap =>
-							contactStore.addContact(docChange.doc.id, contactSnap.data())
-						)
-						.catch(err => console.error('Error getting contact:', err));
-					break;
-				default:
-					console.error('Can not delete or modify contacts docs yet!');
-					break;
-			}
-		});
-	});
+	contactStore.snapshotFuncs.push(currentUserRef.collection('contacts').orderBy('isAvailable', 'desc')
+		.onSnapshot(snapshot => {
+			snapshot.docChanges().forEach((docChange) => {
+				switch (docChange.type) {
+					case 'added':
+						docChange.doc.data().userRef.get()
+							.then(contactSnap =>
+								contactStore.addContact(docChange.doc.id, contactSnap.data())
+							)
+							.catch(err => console.error('Error getting contact:', err));
+						break;
+					case 'modified':
+						contactStore.updateContact(docChange.doc.id, docChange.doc.data());
+						break;
+					default:
+						console.error('Can not delete contacts docs yet!');
+						break;
+				}
+			});
+	}));
 
-	currentUserRef.collection('outgoing_invitations').onSnapshot(snapshot => {
+	contactStore.snapshotFuncs.push(currentUserRef.collection('outgoing_invitations').onSnapshot(snapshot => {
 		snapshot.docChanges().forEach((docChange) => {
 			switch (docChange.type) {
 				case 'added':
 					if (docChange.doc.data().isAccepted || docChange.doc.data().isDeclined) {
 						if (docChange.doc.data().isAccepted) {
-							console.log('adding contact: ', docChange.doc.data().contactRef);
-							// create new contact doc
-							currentUserRef.collection('contacts').doc()
-								// todo: use the email from the latest snapshot, !from the outgoing_invitations doc?
-								.set({ userRef: docChange.doc.data().contactRef, email: docChange.doc.data().email})
-								.catch(err => console.error('Error adding contact: ', err));
+							createNewContact(currentUserRef, docChange.doc.data().contactRef);
 						}
 						// delete outgoing invite doc
 						docChange.doc.ref.delete()
@@ -74,12 +69,7 @@ const initState = contactStore => {
 					break;
 				case 'modified':
 					if (docChange.doc.data().isAccepted) {
-						console.log('adding contact: ', docChange.doc.data().contactRef);
-						// create new contact doc
-						currentUserRef.collection('contacts').doc()
-							// todo: use the email from the latest snapshot, !from the outgoing_invitations doc?
-							.set({ userRef: docChange.doc.data().contactRef, email: docChange.doc.data().email})
-							.catch(err => console.error('Error adding contact: ', err));
+						createNewContact(currentUserRef, docChange.doc.data().contactRef);
 					}
 					// delete outgoing invite doc
 					docChange.doc.ref.delete()
@@ -90,7 +80,18 @@ const initState = contactStore => {
 					break;
 			}
 		});
-	});
+	}));
+
+	function createNewContact(currentUserRef, contactRef) {
+		console.log('adding contact: ', contactRef);
+
+		contactRef.get().then(contactSnap =>
+			currentUserRef.collection('contacts').doc()
+				.set({ userRef: contactRef, email: contactSnap.data().email,
+						isAvailable: contactSnap.data().isAvailable})
+				.catch(err => console.error('Error adding contact: ', err))
+		).catch(err => console.log('error getting contactRef:', err));
+	}
 };
 
 export default initState;
