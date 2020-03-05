@@ -14,7 +14,7 @@ import 'preact-material-components/TopAppBar/style.css';
 import 'preact-material-components/Switch/style.css';
 import 'preact-material-components/Typography/style.css';
 import style from './style.css';
-import firebase from '../../state/firebase';
+import firebase, { firestore } from '../../state/firebase';
 
 @observer
 export default class Header extends Component {
@@ -62,13 +62,16 @@ export default class Header extends Component {
 			.catch(err => console.error('Error in sign out: ', err));
 	}
 
-	toggleAvailability() {
-		console.log('hey!!');
+	toggleAvailability(contactStore) {
+		firestore.collection('users').doc(firebase.auth().currentUser.uid)
+			.update({isAvailable: !contactStore.currentUserIsAvailable})
+			.catch(err => console.error('error toggling availability:', err));
 	}
 
 	render(props) {
 		console.log('selectedRoute: ', props.selectedRoute);
 		let logoutButton;
+		let availabilitySwitch;
 
 		if (firebase.auth().currentUser) {
 			logoutButton = (
@@ -76,6 +79,28 @@ export default class Header extends Component {
 					<TopAppBar.Icon>exit_to_app</TopAppBar.Icon>
 				</TopAppBar.Section>
 			);
+
+			if (props.contactStore.currentUserIsAvailable) {
+				availabilitySwitch = (
+					<TopAppBar.Section>
+						<Switch checked class={`${style.switchAvailability}`}
+								onChange={this.toggleAvailability.bind(this, props.contactStore)} />
+						<Typography body1>
+							You are currently Available
+						</Typography>
+					</TopAppBar.Section>
+				);
+			} else if (props.contactStore.currentUserIsAvailable === false) {
+				availabilitySwitch = (
+					<TopAppBar.Section>
+						<Switch class={`${style.switchAvailability}`}
+								onChange={this.toggleAvailability.bind(this, props.contactStore)} />
+						<Typography body1>
+							You are currently Unavailable
+						</Typography>
+					</TopAppBar.Section>
+				);
+			}
 		}
 
 		return (
@@ -91,12 +116,7 @@ export default class Header extends Component {
 							</TopAppBar.Title>
 						</TopAppBar.Section>
 
-						<TopAppBar.Section>
-							<Switch checked class={`${style.switchAvailability}`} onChange={this.toggleAvailability} />
-							<Typography body1>
-								You are currently Unavailable
-							</Typography>
-						</TopAppBar.Section>
+						{availabilitySwitch}
 
 						{logoutButton}
 
@@ -106,21 +126,21 @@ export default class Header extends Component {
 						{/*</TopAppBar.Section>*/}
 					</TopAppBar.Row>
 				</TopAppBar>
-				<Drawer modal ref={this.drawerRef}>
-					<Drawer.DrawerContent>
-						{/* dummy DrawerItem coz github.com/material-components/material-components-web/issues/762*/}
-						<Drawer.DrawerItem selected={props.selectedRoute === '/'} />
-						<Drawer.DrawerItem selected={props.selectedRoute === '/contacts'}
-							onClick={this.goToContactsList}
-						>
-							<List.ItemGraphic>account_circle</List.ItemGraphic>
-							Contacts
-						</Drawer.DrawerItem>
-						<Drawer.DrawerItem selected={props.selectedRoute === '/profile'} onClick={this.goToMyProfile}>
-							<List.ItemGraphic>account_circle</List.ItemGraphic>
-							Profile
-						</Drawer.DrawerItem>
-					</Drawer.DrawerContent>
+				<Drawer disabled ref={this.drawerRef}>
+					{/*<Drawer.DrawerContent>*/}
+					{/*	/!* dummy DrawerItem coz github.com/material-components/material-components-web/issues/762*!/*/}
+					{/*	<Drawer.DrawerItem selected={props.selectedRoute === '/'} />*/}
+					{/*	<Drawer.DrawerItem selected={props.selectedRoute === '/contacts'}*/}
+					{/*		onClick={this.goToContactsList}*/}
+					{/*	>*/}
+					{/*		<List.ItemGraphic>account_circle</List.ItemGraphic>*/}
+					{/*		Contacts*/}
+					{/*	</Drawer.DrawerItem>*/}
+					{/*	<Drawer.DrawerItem selected={props.selectedRoute === '/profile'} onClick={this.goToMyProfile}>*/}
+					{/*		<List.ItemGraphic>account_circle</List.ItemGraphic>*/}
+					{/*		Profile*/}
+					{/*	</Drawer.DrawerItem>*/}
+					{/*</Drawer.DrawerContent>*/}
 				</Drawer>
 				<Dialog ref={this.dialogRef}>
 					<Dialog.Header>Settings</Dialog.Header>

@@ -41,6 +41,7 @@ export default class App extends Component {
 				route('/contacts');
 			} else {
 				console.log('signed out');
+				that.props.contactStore.currentUserIsAvailable = null;
 				if (that.props.contactStore.incomingInvitations.size > 0)
 					that.props.contactStore.incomingInvitations = new Map();
 				if (that.props.contactStore.contacts.size > 0)
@@ -58,7 +59,8 @@ export default class App extends Component {
 	render({ contactStore }) {
 		return (
 			<div id="app">
-				<Header selectedRoute={this.state.currentUrl} topAppBarTitle={this.state.topAppBarTitle} />
+				<Header selectedRoute={this.state.currentUrl} topAppBarTitle={this.state.topAppBarTitle}
+						contactStore={contactStore}/>
 				<Router onChange={this.handleRoute}>
 					<Home path="/" topAppBarTitle="Availably" />
 					<Profile path="/profile/" user="me"  topAppBarTitle="Profile" />

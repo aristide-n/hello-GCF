@@ -38,6 +38,7 @@ class ContactStore {
 	@observable outgoingInvitations = new Map();
 	@observable incomingInvitations = new Map();
 	@observable contacts = new Map();
+	@observable currentUserIsAvailable;
 
 	@action addOutgoingInvitation(id, invitation) {
 		this.outgoingInvitations.set(id, new OutgoingInvitation(id, invitation));

@@ -31,7 +31,8 @@ export default class Home extends Component {
 				firestore.collection('users').doc(userCred.user.uid).set({
 					uid: userCred.user.uid,
 					email: userCred.user.email,
-					name: nameField.value
+					name: nameField.value,
+					isAvailable: false
 				}).catch(err => console.error('Error adding user: ', err));
 
 				nameField.value = null;

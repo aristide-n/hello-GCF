@@ -3,6 +3,7 @@ import firebase, { firestore } from './firebase';
 const initState = contactStore => {
 	// bug? - users sometimes see other users' invitations (e.g. when one user logs in after another and sends the last
 	// user an invitation). It may have been fixed side effectedly.
+	contactStore.currentUserIsAvailable = null;
 	if (contactStore.incomingInvitations.size > 0)
 		contactStore.incomingInvitations = new Map();
 	if (contactStore.contacts.size > 0)
@@ -10,6 +11,8 @@ const initState = contactStore => {
 	if (contactStore.outgoingInvitations.size > 0)
 		contactStore.outgoingInvitations = new Map();
 	const currentUserRef = firestore.collection('users').doc(firebase.auth().currentUser.uid);
+
+	currentUserRef.onSnapshot(userSnap => contactStore.currentUserIsAvailable = userSnap.data().isAvailable);
 
 	currentUserRef.collection('incoming_invitations').onSnapshot(snapshot => {
 			snapshot.docChanges().forEach((docChange) => {
