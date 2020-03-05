@@ -67,7 +67,7 @@ export default class Home extends Component {
 							<Card>
 								<div class={style.cardBody}>
 									<h3>
-										When Available helps you share your schedule with your contacts and see theirs
+										Availably helps you share your schedule with your contacts and see theirs
 									</h3>
 								</div>
 								<div class={`${style.buttons}`}>

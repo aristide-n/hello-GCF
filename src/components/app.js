@@ -20,7 +20,7 @@ export default class App extends Component {
 		// todo: an - looks like this isn't necessary, eventually remove it?
 		if (!firebase.auth().currentUser) {
 			this.setState({
-				topAppBarTitle: 'when available'
+				topAppBarTitle: 'Availably'
 			});
 			route('/');
 		}
@@ -48,7 +48,7 @@ export default class App extends Component {
 				if (that.props.contactStore.outgoingInvitations.size > 0)
 					that.props.contactStore.outgoingInvitations = new Map();
 				that.setState({
-					topAppBarTitle: 'when available'
+					topAppBarTitle: 'Availably'
 				});
 				route('/');
 			}
@@ -60,11 +60,11 @@ export default class App extends Component {
 			<div id="app">
 				<Header selectedRoute={this.state.currentUrl} topAppBarTitle={this.state.topAppBarTitle} />
 				<Router onChange={this.handleRoute}>
-					<Home path="/" topAppBarTitle="when available" />
+					<Home path="/" topAppBarTitle="Availably" />
 					<Profile path="/profile/" user="me"  topAppBarTitle="Profile" />
 					<Profile path="/profile/:user" topAppBarTitle="Foo" />
 					<ContactsList path="/contacts" topAppBarTitle="Contacts" contactStore={contactStore}/>
-					<NotFound default topAppBarTitle="when available" />
+					<NotFound default topAppBarTitle="Availably" />
 					{/* todo - add more routes here? i.e contacts and "my schedule"*/}
 				</Router>
 			</div>
