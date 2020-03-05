@@ -24,14 +24,16 @@ export default class Home extends Component {
 		firebase.auth().createUserWithEmailAndPassword(emailField.value, pwField.value)
 			.then(userCred => {
 				const nameField = document.querySelector('#su-name-field');
+				const phoneNumField = document.querySelector('#su-phonenum-field');
 
 				console.log('name - ', nameField.value);
 				userCred.user.updateProfile({ displayName: nameField.value })
 					.catch(err => console.error('Error in updateProfile:', err));
 				firestore.collection('users').doc(userCred.user.uid).set({
 					uid: userCred.user.uid,
-					email: userCred.user.email,
 					name: nameField.value,
+					phoneNumber: phoneNumField.value,
+					email: userCred.user.email,
 					isAvailable: false
 				}).catch(err => console.error('Error adding user: ', err));
 
@@ -83,8 +85,9 @@ export default class Home extends Component {
 
 				<Dialog ref={el => { this.signUpDialog = el; }} onAccept={this.signUp}>
 					<Dialog.Body>
+						<TextField label="Name" fullwidth id="su-name-field" />
+						<TextField label="Phone number" fullwidth id="su-phonenum-field" />
 						<TextField label="Email" fullwidth id="su-email-field" />
-						<TextField label="Full name" fullwidth id="su-name-field" />
 						<TextField  label="Password" fullwidth type="password" id="su-password-field" />
 					</Dialog.Body>
 					<Dialog.Footer>

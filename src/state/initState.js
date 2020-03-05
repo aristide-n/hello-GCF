@@ -88,7 +88,7 @@ const initState = contactStore => {
 		contactRef.get().then(contactSnap =>
 			currentUserRef.collection('contacts').doc()
 				.set({ userRef: contactRef, email: contactSnap.data().email,
-						isAvailable: contactSnap.data().isAvailable})
+						phoneNumber: contactSnap.data().phoneNumber, isAvailable: contactSnap.data().isAvailable})
 				.catch(err => console.error('Error adding contact: ', err))
 		).catch(err => console.log('error getting contactRef:', err));
 	}

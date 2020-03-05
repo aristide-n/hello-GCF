@@ -35,8 +35,7 @@ export default class App extends Component {
 		var that = this;
 		firebase.auth().onAuthStateChanged(function(user) {
 			if (user) {
-				console.log('current user: ', user.displayName, user.email, user.emailVerified, user.photoURL,
-					user.isAnonymous, user.uid, user.providerData);
+				console.log('current user: ', user.displayName, user.email);
 				initState(that.props.contactStore);
 				route('/contacts');
 			} else {
