@@ -5,12 +5,14 @@ import Dialog from 'preact-material-components/Dialog';
 import TextField from 'preact-material-components/TextField';
 import Button from 'preact-material-components/Button';
 import Typography from 'preact-material-components/Typography';
+import LayoutGrid from 'preact-material-components/LayoutGrid';
 import 'preact-material-components/TextField/style.css';
 import 'preact-material-components/List/style.css';
 import 'preact-material-components/Button/style.css';
 import 'preact-material-components/Dialog/style.css';
 import 'preact-material-components/Button/style.css';
 import 'preact-material-components/Typography/style.css';
+import 'preact-material-components/LayoutGrid/style.css';
 import style from './style.css';
 import firebase, { firestore } from '../../state/firebase';
 
@@ -54,10 +56,10 @@ export default class ContactsList extends Component {
 						}
 					}
 				)
-		]).then(_ => this.inviteContactHelper(contactPhoneNum));
+		]).then(_ => this.inviteContactHelper(contactPhoneNum, contactNickname));
 	}
 
-	inviteContactHelper(contactPhoneNum) {
+	inviteContactHelper(contactPhoneNum, contactNickname) {
 		let contactSnapshot;
 
 		// todo - maybe use transaction(s) somewhere in here?
@@ -92,7 +94,7 @@ export default class ContactsList extends Component {
 					return firestore.collection('future_users').doc().get()
 						.then(futureUserSnapshot => {
 							contactSnapshot = futureUserSnapshot;
-							futureUserSnapshot.ref.set({phoneNumber: contactPhoneNum});
+							futureUserSnapshot.ref.set({phoneNumber: contactPhoneNum, nickName: contactNickname});
 						})
 						.catch(err => {
 							console.error('Error adding future_user: ', err);
@@ -108,7 +110,7 @@ export default class ContactsList extends Component {
 				const currentUserRef = firestore.collection('users').doc(firebase.auth().currentUser.uid);
 				// add contact phonenum and ref to outgoing invitations sub-col of current user
 				currentUserRef.collection('outgoing_invitations').doc()
-					.set({phoneNumber: contactPhoneNum, contactRef: contactSnapshot.ref})
+					.set({phoneNumber: contactPhoneNum, nickName: contactNickname, contactRef: contactSnapshot.ref})
 					.catch(err => console.error('Error adding outgoingInvitation: ', err));
 
 				// add current user ref to incoming invitations sub-col of contact
@@ -172,8 +174,13 @@ export default class ContactsList extends Component {
 						Array.from(contactStore.incomingInvitations.values()).map(fromUser => (
 							<List.Item>
 								<List.ItemGraphic>perm_identity</List.ItemGraphic>
-								<List.TextContainer>{fromUser.fromUserName}</List.TextContainer>
-								<List.TextContainer>{fromUser.fromUserPhoneNumber}</List.TextContainer>
+								<LayoutGrid.Inner>
+									<LayoutGrid.Cell cols="4">{fromUser.fromUserName}</LayoutGrid.Cell>
+									<LayoutGrid.Cell cols="4">{fromUser.fromUserPhoneNumber}</LayoutGrid.Cell>
+									<LayoutGrid.Cell cols="4">{fromUser.fromUserEmail}</LayoutGrid.Cell>
+								</LayoutGrid.Inner>
+								{/*<List.TextContainer>{fromUser.fromUserName}</List.TextContainer>*/}
+								{/*<List.TextContainer>{fromUser.fromUserPhoneNumber}</List.TextContainer>*/}
 								<List.ItemMeta>
 									<div className={`${style.buttons}`}>
 										<Button dense onClick={this.declineInvitation.bind(this, fromUser.fromUserRef)}>
@@ -203,8 +210,11 @@ export default class ContactsList extends Component {
 						// color options #dcedc8 #e8f5e9
 						<List.Item style={{ background: contact.isAvailable ? '#e8f5e9' : '#fafafa' }}>
 							<List.ItemGraphic>perm_identity</List.ItemGraphic>
-							<List.TextContainer>{contact.name}</List.TextContainer>
-							<List.TextContainer>{contact.phoneNumber}</List.TextContainer>
+							<LayoutGrid.Inner>
+								<LayoutGrid.Cell cols="4">{contact.name}</LayoutGrid.Cell>
+								<LayoutGrid.Cell cols="4">{contact.phoneNumber}</LayoutGrid.Cell>
+								<LayoutGrid.Cell cols="4">{contact.email}</LayoutGrid.Cell>
+							</LayoutGrid.Inner>
 						</List.Item>
 					))
 					}
@@ -227,8 +237,11 @@ export default class ContactsList extends Component {
 						Array.from(contactStore.outgoingInvitations.values()).map(invitation => (
 							<List.Item>
 								<List.ItemGraphic>perm_identity</List.ItemGraphic>
-								<List.TextContainer>{invitation.name}</List.TextContainer>
-								<List.TextContainer>{invitation.phoneNumber}</List.TextContainer>
+
+								<LayoutGrid.Inner>
+									<LayoutGrid.Cell cols="4">{invitation.nickName}</LayoutGrid.Cell>
+									<LayoutGrid.Cell cols="4">{invitation.phoneNumber}</LayoutGrid.Cell>
+								</LayoutGrid.Inner>
 							</List.Item>
 						))
 					}

@@ -2,12 +2,13 @@ import { observable, action } from 'mobx';
 
 class OutgoingInvitation {
 	@observable id;
+	@observable nickName;
 	@observable email;
 	@observable phoneNumber;
 
 	constructor(id, invitation) {
 		this.id = id;
-		this.email = invitation.email;
+		this.nickName = invitation.nickName;
 		this.phoneNumber = invitation.phoneNumber;
 	}
 }
@@ -16,12 +17,14 @@ class IncomingInvitation {
 	@observable id;
 	@observable fromUserName;
 	@observable fromUserPhoneNumber;
+	@observable fromUserEmail;
 	fromUserRef;
 
 	constructor(id, fromUser, fromUserRef) {
 		this.id = id;
 		this.fromUserName = fromUser.name;
 		this.fromUserPhoneNumber = fromUser.phoneNumber;
+		this.fromUserEmail = fromUser.email;
 		this.fromUserRef = fromUserRef;
 	}
 }
