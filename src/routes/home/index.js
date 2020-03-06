@@ -4,11 +4,13 @@ import LayoutGrid from 'preact-material-components/LayoutGrid';
 import Button from 'preact-material-components/Button';
 import Dialog from 'preact-material-components/Dialog';
 import TextField from 'preact-material-components/TextField';
+import Typography from 'preact-material-components/Typography';
 import 'preact-material-components/TextField/style.css';
 import 'preact-material-components/Dialog/style.css';
 import 'preact-material-components/Button/style.css';
 import 'preact-material-components/Card/style.css';
 import 'preact-material-components/LayoutGrid/style.css';
+import 'preact-material-components/Typography/style.css';
 import style from './style.css';
 import firebase, { firestore } from '../../state/firebase';
 
@@ -69,9 +71,9 @@ export default class Home extends Component {
 						<LayoutGrid.Cell cols="4">
 							<Card>
 								<div class={style.cardBody}>
-									<h3>
-										Availably helps you share your schedule with your contacts and see theirs
-									</h3>
+									<Typography headline6>
+										<b>Availably helps you share your schedule with your contacts and see theirs</b>
+									</Typography>
 								</div>
 								<div class={`${style.buttons}`}>
 									<Button raised primary onClick={this.openSignUpDialog}>Sign Up</Button>
