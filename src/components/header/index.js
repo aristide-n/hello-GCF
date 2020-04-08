@@ -1,23 +1,28 @@
-import { h, Component } from 'preact';
+import { Component } from 'preact';
 import { route } from 'preact-router';
+import { observer } from 'preact-mobx';
 import TopAppBar from 'preact-material-components/TopAppBar';
 import Drawer from 'preact-material-components/Drawer';
-import List from 'preact-material-components/List';
+// import List from 'preact-material-components/List';
 import Dialog from 'preact-material-components/Dialog';
 import Switch from 'preact-material-components/Switch';
-import 'preact-material-components/Switch/style.css';
+import Typography from 'preact-material-components/Typography';
 import 'preact-material-components/Dialog/style.css';
 import 'preact-material-components/Drawer/style.css';
 import 'preact-material-components/List/style.css';
 import 'preact-material-components/TopAppBar/style.css';
-// import style from './style';
+import 'preact-material-components/Switch/style.css';
+import 'preact-material-components/Typography/style.css';
+import style from './style.css';
+import firebase, { firestore } from '../../state/firebase';
 
+@observer
 export default class Header extends Component {
 	closeDrawer() {
 		this.drawer.MDComponent.open = false;
-		this.state = {
+		this.setState({
 			darkThemeEnabled: false
-		};
+		});
 	}
 
 	openDrawer = () => (this.drawer.MDComponent.open = true);
@@ -27,13 +32,14 @@ export default class Header extends Component {
 	drawerRef = drawer => (this.drawer = drawer);
 	dialogRef = dialog => (this.dialog = dialog);
 
-	linkTo = path => () => {
+	linkTo = (path, topAppBarTitle) => () => {
 		route(path);
+		this.setState({ topAppBarTitle });
 		this.closeDrawer();
 	};
 
-	goHome = this.linkTo('/');
-	goToMyProfile = this.linkTo('/profile');
+	goToContactsList = this.linkTo('/contacts', 'Contacts');
+	goToMyProfile = this.linkTo('/profile', 'Profile');
 
 	toggleDarkTheme = () => {
 		this.setState(
@@ -49,10 +55,65 @@ export default class Header extends Component {
 				}
 			}
 		);
+	};
+
+	signOut(contactStore) {
+		contactStore.snapshotFuncs.forEach(unsubscribeFunc => unsubscribeFunc());
+		firebase.auth().signOut()
+			.catch(err => console.error('Error in sign out: ', err));
+		contactStore.resetState();
+	}
+
+	toggleAvailability(contactStore) {
+		const newAvailabilityVal = !contactStore.currentUserIsAvailable;
+		firestore.collection('users').doc(firebase.auth().currentUser.uid)
+			.update({isAvailable: newAvailabilityVal})
+			.catch(err => console.error('error toggling availability:', err));
+		firestore.collectionGroup('contacts').where('email', '==', firebase.auth().currentUser.email).get()
+			.then(snapshot =>
+				snapshot.docs.forEach(docSnapshot =>
+					docSnapshot.ref.update({isAvailable: newAvailabilityVal}).catch(err =>
+						console.error('error updating contact availability')
+					)
+				)
+			);
 	}
 
 	render(props) {
-		console.log(props.selectedRoute);
+		console.log('selectedRoute: ', props.selectedRoute);
+		let logoutButton;
+		let availabilitySwitch;
+
+		if (firebase.auth().currentUser) {
+			logoutButton = (
+				<TopAppBar.Section align-end shrink-to-fit onClick={this.signOut.bind(this, props.contactStore)}>
+					<TopAppBar.Icon>exit_to_app</TopAppBar.Icon>
+				</TopAppBar.Section>
+			);
+
+			if (props.contactStore.currentUserIsAvailable) {
+				availabilitySwitch = (
+					<TopAppBar.Section>
+						<Switch checked class={`${style.switchAvailability}`}
+								onChange={this.toggleAvailability.bind(this, props.contactStore)} />
+						<Typography body1>
+							You are currently Available
+						</Typography>
+					</TopAppBar.Section>
+				);
+			} else if (props.contactStore.currentUserIsAvailable === false) {
+				availabilitySwitch = (
+					<TopAppBar.Section>
+						<Switch class={`${style.switchAvailability}`}
+								onChange={this.toggleAvailability.bind(this, props.contactStore)} />
+						<Typography body1>
+							You are currently Unavailable
+						</Typography>
+					</TopAppBar.Section>
+				);
+			}
+		}
+
 		return (
 			<div>
 				<TopAppBar className="topappbar">
@@ -61,24 +122,36 @@ export default class Header extends Component {
 							<TopAppBar.Icon menu onClick={this.openDrawer}>
 								menu
 							</TopAppBar.Icon>
-							<TopAppBar.Title>Preact app</TopAppBar.Title>
+							<TopAppBar.Title>
+								{props.topAppBarTitle || this.state.topAppBarTitle}
+							</TopAppBar.Title>
 						</TopAppBar.Section>
-						<TopAppBar.Section align-end shrink-to-fit onClick={this.openSettings}>
-							<TopAppBar.Icon>settings</TopAppBar.Icon>
-						</TopAppBar.Section>
+
+						{availabilitySwitch}
+
+						{logoutButton}
+
+						{/* TODO: an - restore settings? */}
+						{/*<TopAppBar.Section align-end shrink-to-fit onClick={this.openSettings}>*/}
+						{/*	<TopAppBar.Icon>settings</TopAppBar.Icon>*/}
+						{/*</TopAppBar.Section>*/}
 					</TopAppBar.Row>
 				</TopAppBar>
-				<Drawer modal ref={this.drawerRef}>
-					<Drawer.DrawerContent>
-						<Drawer.DrawerItem selected={props.selectedRoute === '/'} onClick={this.goHome}>
-							<List.ItemGraphic>home</List.ItemGraphic>
-							Home
-						</Drawer.DrawerItem>
-						<Drawer.DrawerItem selected={props.selectedRoute === '/profile'} onClick={this.goToMyProfile}>
-							<List.ItemGraphic>account_circle</List.ItemGraphic>
-							Profile
-						</Drawer.DrawerItem>
-					</Drawer.DrawerContent>
+				<Drawer disabled ref={this.drawerRef}>
+					{/*<Drawer.DrawerContent>*/}
+					{/*	/!* dummy DrawerItem coz github.com/material-components/material-components-web/issues/762*!/*/}
+					{/*	<Drawer.DrawerItem selected={props.selectedRoute === '/'} />*/}
+					{/*	<Drawer.DrawerItem selected={props.selectedRoute === '/contacts'}*/}
+					{/*		onClick={this.goToContactsList}*/}
+					{/*	>*/}
+					{/*		<List.ItemGraphic>account_circle</List.ItemGraphic>*/}
+					{/*		Contacts*/}
+					{/*	</Drawer.DrawerItem>*/}
+					{/*	<Drawer.DrawerItem selected={props.selectedRoute === '/profile'} onClick={this.goToMyProfile}>*/}
+					{/*		<List.ItemGraphic>account_circle</List.ItemGraphic>*/}
+					{/*		Profile*/}
+					{/*	</Drawer.DrawerItem>*/}
+					{/*</Drawer.DrawerContent>*/}
 				</Drawer>
 				<Dialog ref={this.dialogRef}>
 					<Dialog.Header>Settings</Dialog.Header>

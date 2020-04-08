@@ -1,4 +1,7 @@
 import './style';
 import App from './components/app';
+import ContactStore from './state/contactStore';
 
-export default App;
+const Root = () => <App contactStore={ContactStore} />;
+
+export default Root;

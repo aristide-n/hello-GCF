@@ -62,3 +62,8 @@ typings/
 # lock files
 yarn.lock
 package-lock.json
+
+# other
+build
+.idea
+.firebase
